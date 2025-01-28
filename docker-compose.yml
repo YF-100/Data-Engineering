@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  flask-app:
+    build:
+      context: . # Construit à partir du Dockerfile dans le répertoire actuel
+      dockerfile: Dockerfile # Nom explicite du fichier Dockerfile
+    ports:
+      - "5001:5000" # Expose Flask sur le port 5000
+    depends_on:
+      - mongodb # Flask démarre seulement après MongoDB
+    environment:
+      FLASK_ENV: development # Active le mode développement pour Flask
+
+  mongodb:
+    image: mongo:latest # Utilise l'image officielle MongoDB
+    container_name: mongodb
+    ports:
+      - "27017:27017" # Expose MongoDB sur le port 27017
+    volumes:
+      - mongodb_data:/data/db # Persist les données MongoDB
+
+volumes:
+  mongodb_data: # Déclare un volume nommé pour MongoDB
