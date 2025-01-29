@@ -10,13 +10,13 @@ matplotlib.use('Agg')  # Utilise un backend non interactif
 app = Flask(__name__)
 
 def get_data_from_mongo():
-    client = MongoClient("mongodb://localhost:27017")
+    client = MongoClient("mongodb://mongodb:27017/")
     db = client["nba_stats"]
     collection = db["leaders"]
     return list(collection.find())
 
 def get_shooters_from_mongo():
-    client = MongoClient("mongodb://localhost:27017")
+    client = MongoClient("mongodb://mongodb:27017/")
     db = client["nba_stats"]
     collection = db["shooters"]
     return list(collection.find().sort("rank", 1))  # Top 10 shooters
@@ -84,4 +84,4 @@ def create_shooters_table_image(shooters_data):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

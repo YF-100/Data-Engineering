@@ -1,23 +1,30 @@
-# -*- coding: utf-8 -*-
-
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-from scrapy.exceptions import DropItem
 
+# useful for handling different item types with a single interface
+from itemadapter import ItemAdapter
+from pymongo import MongoClient
 
-class TextPipeline(object):
+class MongoPipeline:
+    def __init__(self):
+        # Connexion à MongoDB
+        self.client = MongoClient("mongodb://mongodb:27017/")
+        self.db = self.client["nba_database"]
+        self.collection = self.db["nba_stats"]
 
     def process_item(self, item, spider):
-        if item['title']:
-            item["title"] = clean_spaces(item["title"])
-            return item
-        else:
-            raise DropItem(f"Missing title in {item}")
+        # Insertion des données dans MongoDB
+        self.collection.insert_one(dict(item))
+        return item
+
+    def close_spider(self, spider):
+        self.client.close()  # Fermer la connexion MongoDB
 
 
-def clean_spaces(string):
-    if string:
-        return " ".join(string.split())
+class MonprojetPipeline:
+    def process_item(self, item, spider):
+        return item
+
